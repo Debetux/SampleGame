@@ -39,7 +39,7 @@ def runGame(screen, timer):
     player = Player()
     entities.add(player)
     camera = Camera(complex_camera, WINWIDTH, WINHEIGHT)
-    
+    up = down = left = right = running = False
     screen.fill(white)
 
     while True:
@@ -53,24 +53,24 @@ def runGame(screen, timer):
             elif event.type == KEYDOWN:
                 # stop moving the player's squirrel
                 if event.key in (K_LEFT, K_a):
-                    player.moveLeft = True
+                    left = True
                 elif event.key in (K_RIGHT, K_d):
-                    player.moveRight = True
+                    right = True
                 elif event.key in (K_UP, K_w):
-                    player.moveUp = True
+                    up = True
                 elif event.key in (K_DOWN, K_s):
-                    player.moveDown = True
+                    down = True
 
             elif event.type == KEYUP:
                 # stop moving the player's squirrel
                 if event.key in (K_LEFT, K_a):
-                    player.moveLeft = False
+                    left = False
                 elif event.key in (K_RIGHT, K_d):
-                    player.moveRight = False
+                    right = False
                 elif event.key in (K_UP, K_w):
-                    player.moveUp = False
+                    up = False
                 elif event.key in (K_DOWN, K_s):
-                    player.moveDown = False
+                    down = False
 
                 elif event.key == K_ESCAPE:
                     terminate()
@@ -78,7 +78,16 @@ def runGame(screen, timer):
         for e in entities:
             screen.blit(e.image, camera.apply(e))
 
+
+        camera.update(player)
+
+        # update player, draw everything else
+        player.update(up, down, left, right, running, platforms)
+        for e in entities:
+            screen.blit(e.image, camera.apply(e))
+
         pygame.display.update()
+
         timer.tick(FPS)
 
 
@@ -112,11 +121,11 @@ def simple_camera(camera, target_rect):
 def complex_camera(camera, target_rect):
     l, t, _, _ = target_rect
     _, _, w, h = camera
-    l, t, _, _ = -l+HALF_WIDTH, -t+HALF_HEIGHT, w, h
+    l, t, _, _ = -l+HALF_WINWIDTH, -t+HALF_WINHEIGHT, w, h
 
     l = min(0, l)                           # stop scrolling at the left edge
-    l = max(-(camera.width-WIN_WIDTH), l)   # stop scrolling at the right edge
-    t = max(-(camera.height-WIN_HEIGHT), t) # stop scrolling at the bottom
+    l = max(-(camera.width-WINWIDTH), l)   # stop scrolling at the right edge
+    t = max(-(camera.height-WINHEIGHT), t) # stop scrolling at the bottom
     t = min(0, t)                           # stop scrolling at the top
     return Rect(l, t, w, h)
 
