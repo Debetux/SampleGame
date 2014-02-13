@@ -8,69 +8,73 @@ HALF_WINWIDTH = int(WINWIDTH / 2)
 HALF_WINHEIGHT = int(WINHEIGHT / 2)
 
 def main():
+    """ Global vars, and colors """
     global FPS, FPSCLOCK, WINHEIGHT, WINWIDTH, HALF_WINHEIGHT, HALF_WINWIDTH, DISPLAYSURF
     global green, white
-
+    
     green = (140, 148, 64)
     white = (197, 200, 198)
+    """ End of global part """
 
+
+    """ Init pygame, windows, etc... """
     pygame.init()
-    DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
+
+    screen = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
     pygame.display.set_caption('DoodleJump with BOXES !')
 
+    timer = pygame.time.Clock()
+    """ End of init part """
     
-    FPSCLOCK = pygame.time.Clock()
 
-    global platforms
+    """ Now, we can start the game : """
+    runGame(screen, timer)
+        
+
+
+def runGame(screen, timer):
     platforms = Platforms()
-    
-    global player
     player = Player()
 
     while True:
 
-        runGame()
-        
+        screen.fill(white)
 
+        player.live()
+        platforms.live()
 
-def runGame():
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
 
-    DISPLAYSURF.fill(white)
-    player.live()
-    platforms.live()
+            elif event.type == KEYDOWN:
+                # stop moving the player's squirrel
+                if event.key in (K_LEFT, K_a):
+                    player.moveLeft = True
+                elif event.key in (K_RIGHT, K_d):
+                    player.moveRight = True
+                elif event.key in (K_UP, K_w):
+                    player.moveUp = True
+                elif event.key in (K_DOWN, K_s):
+                    player.moveDown = True
 
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
+            elif event.type == KEYUP:
+                # stop moving the player's squirrel
+                if event.key in (K_LEFT, K_a):
+                    player.moveLeft = False
+                elif event.key in (K_RIGHT, K_d):
+                    player.moveRight = False
+                elif event.key in (K_UP, K_w):
+                    player.moveUp = False
+                elif event.key in (K_DOWN, K_s):
+                    player.moveDown = False
 
-        elif event.type == KEYDOWN:
-            # stop moving the player's squirrel
-            if event.key in (K_LEFT, K_a):
-                player.moveLeft = True
-            elif event.key in (K_RIGHT, K_d):
-                player.moveRight = True
-            elif event.key in (K_UP, K_w):
-                player.moveUp = True
-            elif event.key in (K_DOWN, K_s):
-                player.moveDown = True
+                elif event.key == K_ESCAPE:
+                    terminate()
 
-        elif event.type == KEYUP:
-            # stop moving the player's squirrel
-            if event.key in (K_LEFT, K_a):
-                player.moveLeft = False
-            elif event.key in (K_RIGHT, K_d):
-                player.moveRight = False
-            elif event.key in (K_UP, K_w):
-                player.moveUp = False
-            elif event.key in (K_DOWN, K_s):
-                player.moveDown = False
-
-            elif event.key == K_ESCAPE:
-                terminate()
-
-    pygame.display.update()
-    FPSCLOCK.tick(FPS)
+        pygame.display.update()
+        timer.tick(FPS)
 
 
 
@@ -114,7 +118,7 @@ class Player:
         if(self.moveDown):
             self.rectangle.y += 2
 
-        pygame.draw.rect(DISPLAYSURF, green, self.getrect())
+        #pygame.draw.rect(DISPLAYSURF, green, self.getrect())
 
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
@@ -126,15 +130,15 @@ class Player:
             if self.time >= 2:
                 self.time = 0
 
-        if self.rectangle.collidelist(platforms.platforms_list) > -1:
-            self.startjump()
+        # if self.rectangle.collidelist(platforms.platforms_list) > -1:
+        #     self.startjump()
 
 
     def startjump(self):
         if self.time == 0:
             self.yvel = self.jumpvel
             self.time += 1
-            
+
 
     def go_up(self):
         self.rectangle.y -= 2       
@@ -166,12 +170,13 @@ class Platforms:
                 p.x = random.randint(0, WINWIDTH) 
                 p.y = random.randint(0, WINHEIGHT)
 
-            pygame.draw.rect(DISPLAYSURF, green, p)
+            #pygame.draw.rect(DISPLAYSURF, green, p)
             self.platforms_list.append(p)
 
     def live(self):
-        for p in self.platforms_list:
-            pygame.draw.rect(DISPLAYSURF, green, p)
+        p = None
+        #for p in self.platforms_list:
+            #pygame.draw.rect(DISPLAYSURF, green, p)
 
 
 main()
