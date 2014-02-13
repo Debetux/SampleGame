@@ -11,7 +11,8 @@ def main():
     """ Global vars, and colors """
     global FPS, FPSCLOCK, WINHEIGHT, WINWIDTH, HALF_WINHEIGHT, HALF_WINWIDTH, DISPLAYSURF
     global green, white
-    
+    global cameraX, cameraY
+
     green = (140, 148, 64)
     white = (197, 200, 198)
     """ End of global part """
@@ -20,7 +21,7 @@ def main():
     """ Init pygame, windows, etc... """
     pygame.init()
 
-    screen = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
+    screen = pygame.display.set_mode((WINWIDTH, WINHEIGHT), 0, 32)
     pygame.display.set_caption('DoodleJump with BOXES !')
 
     timer = pygame.time.Clock()
@@ -38,8 +39,10 @@ def runGame(screen, timer):
     platforms = Platforms()
     player = Player()
     entities.add(player)
+    camera = Camera(complex_camera, WINWIDTH, WINHEIGHT)
 
     while True:
+
 
         screen.fill(white)
 
@@ -76,6 +79,9 @@ def runGame(screen, timer):
                 elif event.key == K_ESCAPE:
                     terminate()
 
+        for e in entities:
+            screen.blit(e.image, camera.apply(e))
+
         pygame.display.update()
         timer.tick(FPS)
 
@@ -85,6 +91,38 @@ def terminate():
     pygame.quit()
     sys.exit()
 
+
+class Entity(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+
+class Camera(object):
+    def __init__(self, camera_func, width, height):
+        self.camera_func = camera_func
+        self.state = Rect(0, 0, width, height)
+
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
+
+    def update(self, target):
+        self.state = self.camera_func(self.state, target.rect)
+
+def simple_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    return Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
+
+def complex_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    l, t, _, _ = -l+HALF_WIDTH, -t+HALF_HEIGHT, w, h
+
+    l = min(0, l)                           # stop scrolling at the left edge
+    l = max(-(camera.width-WIN_WIDTH), l)   # stop scrolling at the right edge
+    t = max(-(camera.height-WIN_HEIGHT), t) # stop scrolling at the bottom
+    t = min(0, t)                           # stop scrolling at the top
+    return Rect(l, t, w, h)
 
 """ The player class """
 class Player(Entity):
@@ -108,10 +146,10 @@ class Player(Entity):
         self.moveRight = 0
         self.moveLeft = 0
 
-        self.image = Surface((32,32))
+        self.image = pygame.Surface((32,32))
         self.image.fill(Color("#0000FF"))
         self.image.convert()
-        self.rect = Rect(x, y, 32, 32)
+        self.rect = Rect(0, 0, 32, 32)
         
 
     def move(self):
