@@ -39,14 +39,11 @@ def runGame(screen, timer):
     player = Player()
     entities.add(player)
     camera = Camera(complex_camera, WINWIDTH, WINHEIGHT)
+    
+    screen.fill(white)
 
     while True:
 
-
-        screen.fill(white)
-
-        player.live()
-        platforms.live()
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -125,76 +122,61 @@ def complex_camera(camera, target_rect):
 
 """ The player class """
 class Player(Entity):
-
     def __init__(self):
         Entity.__init__(self)
-        self.size = 25
-        self.x = WINWIDTH / 3 - 50 #center x
-        self.y = WINHEIGHT / 2 #center y
-        self.rectangle = Rect(0, 0, self.size, self.size)
-        self.rectangle.center = (self.x, self.y)
+        self.xvel = 0
         self.yvel = 0
-        self.gravity = .4
-        self.terminalvelocity = 13
-        self.jumpvel = 10
-        self.score = 0
-        self.isalive = True
-        self.time = 0
-        self.moveDown = 0
-        self.moveUp = 0
-        self.moveRight = 0
-        self.moveLeft = 0
-
+        self.onGround = False
         self.image = pygame.Surface((32,32))
         self.image.fill(Color("#0000FF"))
         self.image.convert()
         self.rect = Rect(0, 0, 32, 32)
-        
 
-    def move(self):
-        # We check the movements :
-        if(self.moveRight):
-            self.rectangle.x += 2
-        if(self.moveLeft):
-            self.rectangle.x -= 2
-        if(self.moveUp):
-            self.rectangle.y -= 2
-        if(self.moveDown):
-            self.rectangle.y += 2
+    def update(self, up, down, left, right, running, platforms):
+        if up:
+            # only jump if on the ground
+            if self.onGround: self.yvel -= 10
+        if down:
+            pass
+        if running:
+            self.xvel = 12
+        if left:
+            self.xvel = -8
+        if right:
+            self.xvel = 8
+        if not self.onGround:
+            # only accelerate with gravity if in the air
+            self.yvel += 0.3
+            # max falling speed
+            if self.yvel > 100: self.yvel = 100
+        if not(left or right):
+            self.xvel = 0
+        # increment in x direction
+        self.rect.left += self.xvel
+        # do x-axis collisions
+        self.collide(self.xvel, 0, platforms)
+        # increment in y direction
+        self.rect.top += self.yvel
+        # assuming we're in the air
+        self.onGround = False;
+        # do y-axis collisions
+        self.collide(0, self.yvel, platforms)
 
-        #pygame.draw.rect(DISPLAYSURF, green, self.getrect())
-
-        self.yvel -= self.gravity
-        if abs(self.yvel) >= self.terminalvelocity:
-            self.yvel = -self.terminalvelocity
-        self.rectangle.y -= self.yvel
-        
-        if self.time != 0:
-            self.time += 1
-            if self.time >= 2:
-                self.time = 0
-
-        # if self.rectangle.collidelist(platforms.platforms_list) > -1:
-        #     self.startjump()
-
-
-    def startjump(self):
-        if self.time == 0:
-            self.yvel = self.jumpvel
-            self.time += 1
-
-
-    def go_up(self):
-        self.rectangle.y -= 2       
-
-    def go_down(self):
-        self.rectangle.y += 2
-
-    def getrect(self):
-        return (self.rectangle.x, self.rectangle.y, self.rectangle.width, self.rectangle.height)
-
-    def live(self):
-        self.move()
+    def collide(self, xvel, yvel, platforms):
+        for p in platforms:
+            if pygame.sprite.collide_rect(self, p):
+                if isinstance(p, ExitBlock):
+                    pygame.event.post(pygame.event.Event(QUIT))
+                if xvel > 0:
+                    self.rect.right = p.rect.left
+                if xvel < 0:
+                    self.rect.left = p.rect.right
+                if yvel > 0:
+                    self.rect.bottom = p.rect.top
+                    self.onGround = True
+                    self.yvel = 0
+                if yvel < 0:
+                    self.rect.top = p.rect.bottom
 
 
 
