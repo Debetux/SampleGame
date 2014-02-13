@@ -33,8 +33,11 @@ def main():
 
 
 def runGame(screen, timer):
+
+    entities = pygame.sprite.Group() # Group all our entities (platform, player)
     platforms = Platforms()
     player = Player()
+    entities.add(player)
 
     while True:
 
@@ -84,9 +87,10 @@ def terminate():
 
 
 """ The player class """
-class Player:
+class Player(Entity):
 
     def __init__(self):
+        Entity.__init__(self)
         self.size = 25
         self.x = WINWIDTH / 3 - 50 #center x
         self.y = WINHEIGHT / 2 #center y
@@ -104,7 +108,10 @@ class Player:
         self.moveRight = 0
         self.moveLeft = 0
 
-        self.direction = ""
+        self.image = Surface((32,32))
+        self.image.fill(Color("#0000FF"))
+        self.image.convert()
+        self.rect = Rect(x, y, 32, 32)
         
 
     def move(self):
@@ -154,10 +161,11 @@ class Player:
 
 
 
-""" Class platforms """
-class Platforms:
+""" Platforms, which inherit entity """
+class Platforms(Entity):
 
     def __init__(self):
+        Entity.__init__(self)
         self.platforms_list = list()
         self.populate_platforms()
 
