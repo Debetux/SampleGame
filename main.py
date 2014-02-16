@@ -83,11 +83,11 @@ def runGame(screen, timer):
 
         # update player, draw everything else
         player.update(up, down, left, right, running, platforms)
+        
         for e in entities:
             screen.blit(e.image, camera.apply(e))
 
         pygame.display.update()
-
         timer.tick(FPS)
 
 
