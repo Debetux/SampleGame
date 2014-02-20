@@ -109,7 +109,7 @@ class Player(Entity):
         Entity.__init__(self)
 
         self.image = pygame.Surface((60,60))
-        self.image.fill(Color("#A5494F"))
+        self.image.fill(Color("#FF8A00"))
         self.image.convert()
 
         self.rect = self.image.get_rect()
