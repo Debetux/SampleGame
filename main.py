@@ -36,7 +36,6 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
-    chimp = Chimp()
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
@@ -51,11 +50,10 @@ def runGame(screen, clock):
 
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                terminate()
 
             elif event.type == KEYDOWN:
-                # stop moving the player's squirrel
+                # start moving the player
                 if event.key in (K_LEFT, K_a):
                     left = True
                 elif event.key in (K_RIGHT, K_d):
@@ -66,7 +64,7 @@ def runGame(screen, clock):
                     down = True
 
             elif event.type == KEYUP:
-                # stop moving the player's squirrel
+                # stop moving the player
                 if event.key in (K_LEFT, K_a):
                     left = False
                 elif event.key in (K_RIGHT, K_d):
@@ -109,9 +107,7 @@ class Entity(pygame.sprite.Sprite):
 class Player(Entity):
     def __init__(self):
         Entity.__init__(self)
-        self.xvel = 0
-        self.yvel = 0
-        self.onGround = False
+
         self.image = pygame.Surface((60,60))
         self.image.fill(Color("#A5494F"))
         self.image.convert()
@@ -121,10 +117,5 @@ class Player(Entity):
     def update(self):
         pos = pygame.mouse.get_pos()
         self.rect = pos
-        
-        self.image = pygame.transform.flip(self.image, 1, 0)
-        # self.rect.move_ip(pos)
-
-        return None
 
 main()
