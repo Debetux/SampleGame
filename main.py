@@ -119,21 +119,26 @@ class Player(Entity):
 
         self.left = self.right = self.up = self.down = False
 
-        self.image = pygame.Surface((60,60))
+        self.image = pygame.Surface((30,30))
         self.image.fill(Color("#FF8A00"))
         self.image.convert()
 
         self.rect = self.image.get_rect()
 
     def update(self, platforms_list):
+
         if(self.right):
-            self.rect.x += 2
+            self.rect.x += 3
         if(self.left):
-            self.rect.x -= 2
+            self.rect.x -= 3
         if(self.up):
-            self.rect.y -= 2
+            self.rect.y -= 3
         if(self.down):
-            self.rect.y += 2
+            self.rect.y += 3
+
+        if(self.rect.bottom >= WINHEIGHT):
+            self.rect.bottom = WINHEIGHT
+            self.yvel = 0
 
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
