@@ -36,6 +36,7 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
+    platform = Platforms()
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
@@ -55,24 +56,24 @@ def runGame(screen, clock):
             elif event.type == KEYDOWN:
                 # start moving the player
                 if event.key in (K_LEFT, K_a):
-                    left = True
+                    player.left = True
                 elif event.key in (K_RIGHT, K_d):
-                    right = True
+                    player.right = True
                 elif event.key in (K_UP, K_w):
-                    up = True
+                    player.up = True
                 elif event.key in (K_DOWN, K_s):
-                    down = True
+                    player.down = True
 
             elif event.type == KEYUP:
                 # stop moving the player
                 if event.key in (K_LEFT, K_a):
-                    left = False
+                    player.left = False
                 elif event.key in (K_RIGHT, K_d):
-                    right = False
+                    player.right = False
                 elif event.key in (K_UP, K_w):
-                    up = False
+                    player.up = False
                 elif event.key in (K_DOWN, K_s):
-                    down = False
+                    player.down = False
 
                 elif event.key == K_ESCAPE:
                     terminate()
@@ -82,7 +83,9 @@ def runGame(screen, clock):
 
         # Draw entities
         entities.draw(screen)
-        
+        # ... and platforms
+        platform.update()
+
         # Make them live
         entities.update()
 
@@ -108,6 +111,8 @@ class Player(Entity):
     def __init__(self):
         Entity.__init__(self)
 
+        self.left = self.right = self.up = self.down = False
+
         self.image = pygame.Surface((60,60))
         self.image.fill(Color("#FF8A00"))
         self.image.convert()
@@ -115,7 +120,40 @@ class Player(Entity):
         self.rect = self.image.get_rect()
 
     def update(self):
-        pos = pygame.mouse.get_pos()
-        self.rect = pos
+        if(self.right):
+            self.rect.x += 2
+        if(self.left):
+            self.rect.x -= 2
+        if(self.up):
+            self.rect.y -= 2
+        if(self.down):
+            self.rect.y += 2
+
+
+""" Platforms """
+class Platforms(Entity):
+
+    def __init__(self):
+        Entity.__init__(self)
+
+        self.platforms_list = list()
+        self.populate_platforms()
+
+    def populate_platforms(self):
+
+        for i in range(random.randint(60,70)):
+            p = Rect((random.randint(0, WINWIDTH), random.randint(0, WINHEIGHT)), (60, 10))
+            
+            while p.collidelist(self.platforms_list) != -1:
+                p.x = random.randint(0, WINWIDTH) 
+                p.y = random.randint(0, WINHEIGHT)
+
+            #pygame.draw.rect(DISPLAYSURF, green, p)
+            self.platforms_list.append(p)
+
+    def update(self):
+        p = None
+        for p in self.platforms_list:
+            pygame.draw.rect(pygame.display.get_surface(), green, p)
 
 main()
