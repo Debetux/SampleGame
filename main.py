@@ -86,8 +86,8 @@ def runGame(screen, clock):
         # ... and platforms
         platform.update()
 
-        # Make them live
-        entities.update()
+        # Make player live
+        player.update(platform.platforms_list)
 
         # Flip the images
         pygame.display.flip()
@@ -111,6 +111,12 @@ class Player(Entity):
     def __init__(self):
         Entity.__init__(self)
 
+        self.yvel = 0
+        self.gravity = .4
+        self.terminalvelocity = 13
+        self.jumpvel = 10
+        self.time = 0
+
         self.left = self.right = self.up = self.down = False
 
         self.image = pygame.Surface((60,60))
@@ -119,7 +125,7 @@ class Player(Entity):
 
         self.rect = self.image.get_rect()
 
-    def update(self):
+    def update(self, platforms_list):
         if(self.right):
             self.rect.x += 2
         if(self.left):
@@ -128,6 +134,24 @@ class Player(Entity):
             self.rect.y -= 2
         if(self.down):
             self.rect.y += 2
+
+        self.yvel -= self.gravity
+        if abs(self.yvel) >= self.terminalvelocity:
+            self.yvel = -self.terminalvelocity
+        self.rect.y -= self.yvel
+        
+        if self.time != 0:
+            self.time += 1
+            if self.time >= 2:
+                self.time = 0
+
+        if self.rect.collidelist(platforms_list) > -1:
+            self.startjump()
+
+    def startjump(self):
+        if self.time == 0:
+            self.yvel = self.jumpvel
+            self.time += 1
 
 
 """ Platforms """
@@ -148,7 +172,7 @@ class Platforms(Entity):
                 p.x = random.randint(0, WINWIDTH) 
                 p.y = random.randint(0, WINHEIGHT)
 
-            #pygame.draw.rect(DISPLAYSURF, green, p)
+            # pygame.draw.rect(DISPLAYSURF, green, p)
             self.platforms_list.append(p)
 
     def update(self):
