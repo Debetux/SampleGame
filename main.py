@@ -11,7 +11,7 @@ def main():
     """ Global vars, and colors """
     global FPS, FPSCLOCK, WINHEIGHT, WINWIDTH, HALF_WINHEIGHT, HALF_WINWIDTH, DISPLAYSURF
     global green, white
-    global cameraX, cameraY
+    global cameraX, cameraY, camera
 
     green = (140, 148, 64)
     white = (197, 200, 198)
@@ -25,6 +25,7 @@ def main():
     pygame.display.set_caption('DoodleJump with BOXES !')
 
     clock = pygame.time.Clock()
+    camera = Camera(simple_camera, WINWIDTH, WINHEIGHT)
     """ End of init part """
     
 
@@ -81,8 +82,11 @@ def runGame(screen, clock):
         # Reset image with the background
         screen.blit(background, (0, 0))
 
+        camera.update(player)
+
         # Draw entities
-        entities.draw(screen)
+        for e in entities:
+            screen.blit(e.image, camera.apply(e))
         # ... and platforms
         platform.update()
 
@@ -195,5 +199,33 @@ class Platforms(Entity):
         screen = pygame.display.get_surface()
         for p in self.platforms_list:
             pygame.draw.rect(screen, green, p)
+
+
+class Camera(object):
+    def __init__(self, camera_func, width, height):
+        self.camera_func = camera_func
+        self.state = Rect(0, 0, width, height)
+
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
+
+    def update(self, target):
+        self.state = self.camera_func(self.state, target.rect)
+
+def simple_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    return Rect(-l+HALF_WINWIDTH, -t+HALF_WINHEIGHT, w, h)
+
+def complex_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    l, t, _, _ = -l+HALF_WINWIDTH, -t+HALF_WINHEIGHT, w, h
+
+    l = min(0, l)                           # stop scrolling at the left edge
+    l = max(-(camera.width-HALF_WINWIDTH), l)   # stop scrolling at the right edge
+    t = max(-(camera.height-HALF_WINHEIGHT), t) # stop scrolling at the bottom
+    t = min(0, t)                           # stop scrolling at the top
+    return Rect(l, t, w, h)
 
 main()
