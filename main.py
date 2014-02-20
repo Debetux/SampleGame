@@ -79,10 +79,16 @@ def runGame(screen, clock):
                 elif event.key == K_ESCAPE:
                     terminate()
 
+        # Reset image with the background
         screen.blit(background, (0, 0))
 
+        # Draw entities
         entities.draw(screen)
+        
+        # Make them live
         entities.update()
+
+        # Flip the images
         pygame.display.flip()
         clock.tick(FPS)
 
