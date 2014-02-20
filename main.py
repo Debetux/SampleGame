@@ -36,6 +36,7 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
+    chimp = Chimp()
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
@@ -44,7 +45,7 @@ def runGame(screen, clock):
 
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill(white)
+    background.fill(Color("#BEEDFD"))
 
     screen.blit(background, (0, 0))
 
@@ -80,7 +81,7 @@ def runGame(screen, clock):
                 elif event.key == K_ESCAPE:
                     terminate()
 
-
+        entities.draw(screen)
         entities.update()
         pygame.display.update()
         clock.tick(FPS)
@@ -106,115 +107,26 @@ class Player(Entity):
         self.yvel = 0
         self.onGround = False
         self.image = pygame.Surface((32,32))
-        self.image.fill(Color("#0000FF"))
+        self.image.fill(Color("#A5494F"))
         self.image.convert()
-        self.rect = Rect(0, 0, 32, 32)
+
+        self.rect = Rect(0, 0, 0, 0)
 
     def update(self):
+        #pos = pygame.mouse.get_pos()
+        #self.rect.midtop = pos
+
         return None
 
-    # def update(self, up, down, left, right, running, platforms):
-    #     if up:
-    #         # only jump if on the ground
-    #         if self.onGround: self.yvel -= 10
-    #     if down:
-    #         pass
-    #     if running:
-    #         self.xvel = 12
-    #     if left:
-    #         self.xvel = -8
-    #     if right:
-    #         self.xvel = 8
-    #     if not self.onGround:
-    #         # only accelerate with gravity if in the air
-    #         self.yvel += 0.3
-    #         # max falling speed
-    #         if self.yvel > 100: self.yvel = 100
-    #     if not(left or right):
-    #         self.xvel = 0
-    #     # increment in x direction
-    #     self.rect.left += self.xvel
-    #     # do x-axis collisions
-    #     self.collide(self.xvel, 0, platforms)
-    #     # increment in y direction
-    #     self.rect.top += self.yvel
-    #     # assuming we're in the air
-    #     self.onGround = False;
-    #     # do y-axis collisions
-    #     self.collide(0, self.yvel, platforms)
-
-
-
-""" Platforms, which inherit entity """
-class Platforms(Entity):
-
-    def __init__(self):
-        Entity.__init__(self)
-        self.platforms_list = list()
-        self.populate_platforms()
-
-    def populate_platforms(self):
-
-        for i in range(random.randint(30,40)):
-            p = Rect((random.randint(0, WINWIDTH), random.randint(0, WINHEIGHT)), (60, 10))
-            
-            while p.collidelist(self.platforms_list) != -1:
-                p.x = random.randint(0, WINWIDTH) 
-                p.y = random.randint(0, WINHEIGHT)
-
-            #pygame.draw.rect(DISPLAYSURF, green, p)
-            self.platforms_list.append(p)
-
-    def live(self):
-        p = None
-        #for p in self.platforms_list:
-            #pygame.draw.rect(DISPLAYSURF, green, p)
 
 class Chimp(pygame.sprite.Sprite):
     """moves a monkey critter across the screen. it can spin the
        monkey when it is punched."""
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
-        self.image, self.rect = load_image('chimp.bmp', -1)
-        screen = pygame.display.get_surface()
-        self.area = screen.get_rect()
-        self.rect.topleft = 10, 10
-        self.move = 9
-        self.dizzy = 0
+        
 
     def update(self):
-        "walk or spin, depending on the monkeys state"
-        if self.dizzy:
-            self._spin()
-        else:
-            self._walk()
-
-    def _walk(self):
-        "move the monkey across the screen, and turn at the ends"
-        newpos = self.rect.move((self.move, 0))
-        if self.rect.left < self.area.left or \
-           self.rect.right > self.area.right:
-            self.move = -self.move
-            newpos = self.rect.move((self.move, 0))
-            self.image = pygame.transform.flip(self.image, 1, 0)
-        self.rect = newpos
-
-    def _spin(self):
-        "spin the monkey image"
-        center = self.rect.center
-        self.dizzy = self.dizzy + 12
-        if self.dizzy >= 360:
-            self.dizzy = 0
-            self.image = self.original
-        else:
-            rotate = pygame.transform.rotate
-            self.image = rotate(self.original, self.dizzy)
-        self.rect = self.image.get_rect(center=center)
-
-    def punched(self):
-        "this will cause the monkey to start spinning"
-        if not self.dizzy:
-            self.dizzy = 1
-            self.original = self.image
+        return None
 
 main()
