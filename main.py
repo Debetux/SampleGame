@@ -24,22 +24,29 @@ def main():
     screen = pygame.display.set_mode((WINWIDTH, WINHEIGHT), 0, 32)
     pygame.display.set_caption('DoodleJump with BOXES !')
 
-    timer = pygame.time.Clock()
+    clock = pygame.time.Clock()
     """ End of init part """
     
 
     """ Now, we can start the game : """
-    runGame(screen, timer)
+    runGame(screen, clock)
         
 
 
-def runGame(screen, timer):
+def runGame(screen, clock):
+
+    player = Player()
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
-    player = Player()
     entities.add(player)
+    
     up = down = left = right = running = False
-    screen.fill(white)
+
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill(white)
+
+    screen.blit(background, (0, 0))
 
     while True:
 
@@ -74,14 +81,9 @@ def runGame(screen, timer):
                     terminate()
 
 
-        # update player, draw everything else
-        player.update(up, down, left, right, running, platforms)
-        
-        for e in entities:
-            screen.blit(e.image, camera.apply(e))
 
         pygame.display.update()
-        timer.tick(FPS)
+        clock.tick(FPS)
 
 
 
@@ -95,32 +97,6 @@ class Entity(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
 
-class Camera(object):
-    def __init__(self, camera_func, width, height):
-        self.camera_func = camera_func
-        self.state = Rect(0, 0, width, height)
-
-    def apply(self, target):
-        return target.rect.move(self.state.topleft)
-
-    def update(self, target):
-        self.state = self.camera_func(self.state, target.rect)
-
-def simple_camera(camera, target_rect):
-    l, t, _, _ = target_rect
-    _, _, w, h = camera
-    return Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
-
-def complex_camera(camera, target_rect):
-    l, t, _, _ = target_rect
-    _, _, w, h = camera
-    l, t, _, _ = -l+HALF_WINWIDTH, -t+HALF_WINHEIGHT, w, h
-
-    l = min(0, l)                           # stop scrolling at the left edge
-    l = max(-(camera.width-WINWIDTH), l)   # stop scrolling at the right edge
-    t = max(-(camera.height-WINHEIGHT), t) # stop scrolling at the bottom
-    t = min(0, t)                           # stop scrolling at the top
-    return Rect(l, t, w, h)
 
 """ The player class """
 class Player(Entity):
