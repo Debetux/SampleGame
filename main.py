@@ -47,8 +47,6 @@ def runGame(screen, clock):
     background = background.convert()
     background.fill(Color("#BEEDFD"))
 
-    screen.blit(background, (0, 0))
-
     while True:
 
         for event in pygame.event.get():
@@ -81,9 +79,11 @@ def runGame(screen, clock):
                 elif event.key == K_ESCAPE:
                     terminate()
 
+        screen.blit(background, (0, 0))
+
         entities.draw(screen)
         entities.update()
-        pygame.display.update()
+        pygame.display.flip()
         clock.tick(FPS)
 
 
@@ -114,20 +114,11 @@ class Player(Entity):
 
     def update(self):
         pos = pygame.mouse.get_pos()
-        # self.rect.midtop = pos
-        self.rect.move_ip(pos)
-
-        return None
-
-
-class Chimp(pygame.sprite.Sprite):
-    """moves a monkey critter across the screen. it can spin the
-       monkey when it is punched."""
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.rect = pos
         
+        self.image = pygame.transform.flip(self.image, 1, 0)
+        # self.rect.move_ip(pos)
 
-    def update(self):
         return None
 
 main()
