@@ -156,7 +156,7 @@ class Player(Entity):
 
         # Detect if we need to jump or not :
         collision = self.rect.collidelist(platforms_list)
-        if collision > -1 and self.yvel < 0:
+        if collision > -1 and self.yvel < 0 and self.rect.bottom >= platforms_list[collision].top:
             self.startjump()
 
 
