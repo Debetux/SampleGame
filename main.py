@@ -106,15 +106,16 @@ class Player(Entity):
         self.xvel = 0
         self.yvel = 0
         self.onGround = False
-        self.image = pygame.Surface((32,32))
+        self.image = pygame.Surface((60,60))
         self.image.fill(Color("#A5494F"))
         self.image.convert()
 
-        self.rect = Rect(0, 0, 0, 0)
+        self.rect = self.image.get_rect()
 
     def update(self):
-        #pos = pygame.mouse.get_pos()
-        #self.rect.midtop = pos
+        pos = pygame.mouse.get_pos()
+        # self.rect.midtop = pos
+        self.rect.move_ip(pos)
 
         return None
 
