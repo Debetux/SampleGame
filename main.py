@@ -38,12 +38,10 @@ def runGame(screen, timer):
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     player = Player()
     entities.add(player)
-    camera = Camera(complex_camera, WINWIDTH, WINHEIGHT)
     up = down = left = right = running = False
     screen.fill(white)
 
     while True:
-
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -75,11 +73,6 @@ def runGame(screen, timer):
                 elif event.key == K_ESCAPE:
                     terminate()
 
-        for e in entities:
-            screen.blit(e.image, camera.apply(e))
-
-
-        camera.update(player)
 
         # update player, draw everything else
         player.update(up, down, left, right, running, platforms)
@@ -170,22 +163,6 @@ class Player(Entity):
         self.onGround = False;
         # do y-axis collisions
         self.collide(0, self.yvel, platforms)
-
-    def collide(self, xvel, yvel, platforms):
-        for p in platforms:
-            if pygame.sprite.collide_rect(self, p):
-                if isinstance(p, ExitBlock):
-                    pygame.event.post(pygame.event.Event(QUIT))
-                if xvel > 0:
-                    self.rect.right = p.rect.left
-                if xvel < 0:
-                    self.rect.left = p.rect.right
-                if yvel > 0:
-                    self.rect.bottom = p.rect.top
-                    self.onGround = True
-                    self.yvel = 0
-                if yvel < 0:
-                    self.rect.top = p.rect.bottom
 
 
 
