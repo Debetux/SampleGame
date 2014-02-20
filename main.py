@@ -153,7 +153,8 @@ class Platforms(Entity):
 
     def update(self):
         p = None
+        screen = pygame.display.get_surface()
         for p in self.platforms_list:
-            pygame.draw.rect(pygame.display.get_surface(), green, p)
+            pygame.draw.rect(screen, green, p)
 
 main()
