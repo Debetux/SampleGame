@@ -124,6 +124,7 @@ class Player(Entity):
         self.image.convert()
 
         self.rect = self.image.get_rect()
+        self.startjump()
 
     def update(self, platforms_list):
 
@@ -139,19 +140,28 @@ class Player(Entity):
         if(self.rect.bottom >= WINHEIGHT):
             self.rect.bottom = WINHEIGHT
             self.yvel = 0
+            self.startjump()
 
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
             self.yvel = -self.terminalvelocity
+
         self.rect.y -= self.yvel
+        
         
         if self.time != 0:
             self.time += 1
             if self.time >= 2:
                 self.time = 0
 
-        if self.rect.collidelist(platforms_list) > -1:
+        # Detect if we need to jump or not :
+        collision = self.rect.collidelist(platforms_list)
+        if collision > -1 and self.yvel < 0:
             self.startjump()
+
+
+
+
 
     def startjump(self):
         if self.time == 0:
