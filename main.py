@@ -39,7 +39,7 @@ def runGame(screen, clock):
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
-    
+
     up = down = left = right = running = False
 
     background = pygame.Surface(screen.get_size())
@@ -81,7 +81,7 @@ def runGame(screen, clock):
                     terminate()
 
 
-
+        entities.update()
         pygame.display.update()
         clock.tick(FPS)
 
@@ -110,35 +110,38 @@ class Player(Entity):
         self.image.convert()
         self.rect = Rect(0, 0, 32, 32)
 
-    def update(self, up, down, left, right, running, platforms):
-        if up:
-            # only jump if on the ground
-            if self.onGround: self.yvel -= 10
-        if down:
-            pass
-        if running:
-            self.xvel = 12
-        if left:
-            self.xvel = -8
-        if right:
-            self.xvel = 8
-        if not self.onGround:
-            # only accelerate with gravity if in the air
-            self.yvel += 0.3
-            # max falling speed
-            if self.yvel > 100: self.yvel = 100
-        if not(left or right):
-            self.xvel = 0
-        # increment in x direction
-        self.rect.left += self.xvel
-        # do x-axis collisions
-        self.collide(self.xvel, 0, platforms)
-        # increment in y direction
-        self.rect.top += self.yvel
-        # assuming we're in the air
-        self.onGround = False;
-        # do y-axis collisions
-        self.collide(0, self.yvel, platforms)
+    def update(self):
+        return None
+
+    # def update(self, up, down, left, right, running, platforms):
+    #     if up:
+    #         # only jump if on the ground
+    #         if self.onGround: self.yvel -= 10
+    #     if down:
+    #         pass
+    #     if running:
+    #         self.xvel = 12
+    #     if left:
+    #         self.xvel = -8
+    #     if right:
+    #         self.xvel = 8
+    #     if not self.onGround:
+    #         # only accelerate with gravity if in the air
+    #         self.yvel += 0.3
+    #         # max falling speed
+    #         if self.yvel > 100: self.yvel = 100
+    #     if not(left or right):
+    #         self.xvel = 0
+    #     # increment in x direction
+    #     self.rect.left += self.xvel
+    #     # do x-axis collisions
+    #     self.collide(self.xvel, 0, platforms)
+    #     # increment in y direction
+    #     self.rect.top += self.yvel
+    #     # assuming we're in the air
+    #     self.onGround = False;
+    #     # do y-axis collisions
+    #     self.collide(0, self.yvel, platforms)
 
 
 
