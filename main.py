@@ -37,7 +37,6 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
-    platform = Platforms()
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
@@ -47,6 +46,21 @@ def runGame(screen, clock):
     background = pygame.Surface(screen.get_size())
     background = background.convert()
     background.fill(Color("#BEEDFD"))
+
+
+    """ Populate platforms """
+    for i in range(random.randint(60,70)):
+        p = Platform()
+        p.rect = (random.randint(0, WINWIDTH), random.randint(0, WINHEIGHT))
+        
+        entities.add(p)
+        # while p.collidelist(self.platforms_list) != -1:
+        #     p.x = random.randint(0, WINWIDTH) 
+        #     p.y = random.randint(0, WINHEIGHT)
+
+        # pygame.draw.rect(DISPLAYSURF, green, p)
+        # self.platforms_list.append(p)
+
 
     while True:
 
@@ -85,13 +99,12 @@ def runGame(screen, clock):
         camera.update(player)
 
         # Draw entities
-        for e in entities:
-            screen.blit(e.image, camera.apply(e))
+        entities.draw(screen)
         # ... and platforms
-        platform.update()
+        
 
         # Make player live
-        player.update(platform.platforms_list)
+        player.update()
 
         # Flip the images
         pygame.display.flip()
@@ -173,32 +186,20 @@ class Player(Entity):
             self.time += 1
 
 
-""" Platforms """
-class Platforms(Entity):
+""" Platform """
+class Platform(Entity):
 
     def __init__(self):
         Entity.__init__(self)
 
-        self.platforms_list = list()
-        self.populate_platforms()
+        self.image = pygame.Surface((60,10))
+        self.image.fill(green)
+        self.image.convert()
 
-    def populate_platforms(self):
-
-        for i in range(random.randint(60,70)):
-            p = Rect((random.randint(0, WINWIDTH), random.randint(0, WINHEIGHT)), (60, 10))
-            
-            while p.collidelist(self.platforms_list) != -1:
-                p.x = random.randint(0, WINWIDTH) 
-                p.y = random.randint(0, WINHEIGHT)
-
-            # pygame.draw.rect(DISPLAYSURF, green, p)
-            self.platforms_list.append(p)
+        self.rect = self.image.get_rect()
 
     def update(self):
-        p = None
-        screen = pygame.display.get_surface()
-        for p in self.platforms_list:
-            pygame.draw.rect(screen, green, p)
+        return None
 
 
 class Camera(object):
