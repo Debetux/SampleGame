@@ -166,11 +166,8 @@ class Player(Entity):
             self.yvel = 0
             self.startjump()
 
-        for platform in platforms_list:
-            #import pdb; pdb.set_trace()
-            print(platform)
-            if pygame.sprite.collide_rect(self, platform):
-                self.startjump()
+        if(pygame.sprite.spritecollideany(self, platforms_list)):
+            print('BAM')
 
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
