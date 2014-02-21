@@ -104,7 +104,7 @@ def runGame(screen, clock):
         # Reset image with the background
         screen.blit(background, (0, 0))
 
-        camera.update(player)
+        # camera.update(player)
 
         # Draw entities
         entities.draw(screen)
@@ -155,6 +155,16 @@ class Player(Entity):
 
     def update(self, platforms_list):
 
+        collide_platform = pygame.sprite.spritecollideany(self, platforms_list)
+
+        for platform in platforms_list:
+            if pygame.sprite.collide_rect(self, platform):
+                print("Collision detected, waiting 1 sec...")
+                print('self.rect', self.rect, 'platform.rect', platform.rect)
+                time.sleep(1)
+                print('Jumping !\n')
+                self.startjump()
+
         if(self.right):
             self.rect.x += 3
         if(self.left):
@@ -169,11 +179,6 @@ class Player(Entity):
             self.yvel = 0
             self.startjump()
 
-        collide_platform = pygame.sprite.spritecollideany(self, platforms_list)
-        if(collide_platform):
-            print("Collision detected, waiting 1 sec...")
-            time.sleep(1)
-            self.startjump()
 
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
