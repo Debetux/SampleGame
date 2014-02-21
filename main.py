@@ -37,7 +37,7 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
-    camera = Camera(simple_camera, WINWIDTH, WINHEIGHT*2)
+    camera = Camera(vertical_camera, WINWIDTH, WINHEIGHT*2)
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
@@ -252,12 +252,13 @@ class Camera(object):
     def __init__(self, camera_func, width, height):
         self.camera_func = camera_func
         self.state = Rect(0, 0, width, height)
+        self.max_t = 0
 
     def apply(self, target):
         return target.rect.move(self.state.topleft)
 
     def update(self, target):
-        self.state = self.camera_func(self.state, target.rect)
+        self.state = self.camera_func(self, target.rect)
 
 def simple_camera(camera, target_rect):
     l, t, _, _ = target_rect
@@ -273,6 +274,20 @@ def complex_camera(camera, target_rect):
     l = max(-(camera.width-HALF_WINWIDTH), l)   # stop scrolling at the right edge
     t = max(-(camera.height-HALF_WINHEIGHT), t) # stop scrolling at the bottom
     t = min(0, t)                           # stop scrolling at the top
+    return Rect(l, t, w, h)
+
+def vertical_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera.state
+    l, t, _, _ = -l+HALF_WINWIDTH, -t+HALF_WINHEIGHT, w, h
+
+    # The camera only go up
+    if(camera.max_t < t):
+        camera.max_t = t
+    t = camera.max_t
+    
+    t = max(-(camera.state.height-HALF_WINHEIGHT), t) # stop scrolling at the bottom
+    print(l, t, w, h)
     return Rect(l, t, w, h)
 
 main()
