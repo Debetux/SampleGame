@@ -37,6 +37,7 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
+    camera = Camera(complex_camera, WINWIDTH, WINHEIGHT)
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
@@ -50,7 +51,7 @@ def runGame(screen, clock):
 
 
     """ Populate platforms """
-    for iy in range(0, WINHEIGHT, random.randint(40, 50)):
+    for iy in range(-WINHEIGHT, WINHEIGHT, random.randint(40, 50)):
 
         for ix in range(0, WINWIDTH, random.randint(70, 80)):
             if(random.randint(0,5) == 1):
@@ -104,12 +105,12 @@ def runGame(screen, clock):
         # Reset image with the background
         screen.blit(background, (0, 0))
 
-        # camera.update(player)
+        camera.update(player)
 
         # Draw entities
-        entities.draw(screen)
-        # for e in entities:
-        #     screen.blit(e.image, camera.apply(e))
+        # entities.draw(screen)
+        for e in entities:
+             screen.blit(e.image, camera.apply(e))
         # ... and platforms
         
 
@@ -146,7 +147,7 @@ class Player(Entity):
 
         self.left = self.right = self.up = self.down = False
 
-        self.image = pygame.Surface((30,30))
+        self.image = pygame.Surface((10,10))
         self.image.fill(Color("#FF8A00"))
         self.image.convert()
 
@@ -154,16 +155,6 @@ class Player(Entity):
         self.startjump()
 
     def update(self, platforms_list):
-
-        collide_platform = pygame.sprite.spritecollideany(self, platforms_list)
-
-        for platform in platforms_list:
-            if pygame.sprite.collide_rect(self, platform):
-                print("Collision detected, waiting 1 sec...")
-                print('self.rect', self.rect, 'platform.rect', platform.rect)
-                time.sleep(1)
-                print('Jumping !\n')
-                self.startjump()
 
         if(self.right):
             self.rect.x += 3
@@ -216,7 +207,19 @@ class Player(Entity):
                 self.rect.x = WINWIDTH + out_left
         """ End """  
         
-        
+        collide_platform = pygame.sprite.spritecollideany(self, platforms_list)
+
+        for platform in platforms_list:
+            if pygame.sprite.collide_rect(self, platform) and self.yvel < 0:
+
+                # pygame.draw.line(screen, (255,255,0), (0, self.rect.y), (WINWIDTH, self.rect.y))
+                # pygame.draw.line(screen, (255,255,0), (0, platform.rect.y), (WINWIDTH, platform.rect.y))
+
+                # pygame.draw.rect(screen, (0,0,0), (0, 0, WINWIDTH, WINHEIGHT))
+                # print("Collision detected, waiting 1 sec...")
+                # print('self.rect', self.rect, 'platform.rect', platform.rect)
+                # time.sleep(0.5)
+                self.startjump()
 
 
 
