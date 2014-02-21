@@ -60,7 +60,6 @@ def runGame(screen, clock):
 
                 entities.add(p)
                 platforms_list.append(p)
-                print(p.rect)
         
 
         # while p.collidelist(self.platforms_list) != -1:
@@ -70,7 +69,7 @@ def runGame(screen, clock):
         # pygame.draw.rect(DISPLAYSURF, green, p)
         # self.platforms_list.append(p)
 
-    print(len(platforms_list))
+    
     while True:
 
         for event in pygame.event.get():
@@ -170,7 +169,10 @@ class Player(Entity):
             self.yvel = 0
             self.startjump()
 
-        if(pygame.sprite.spritecollideany(self, platforms_list)):
+        collide_platform = pygame.sprite.spritecollideany(self, platforms_list)
+        if(collide_platform):
+            print("Collision detected, waiting 1 sec...")
+            time.sleep(1)
             self.startjump()
 
         self.yvel -= self.gravity
