@@ -99,7 +99,9 @@ def runGame(screen, clock):
         camera.update(player)
 
         # Draw entities
-        entities.draw(screen)
+        entities.draw()
+        # for e in entities:
+        #     screen.blit(e.image, camera.apply(e))
         # ... and platforms
         
 
@@ -143,7 +145,7 @@ class Player(Entity):
         self.rect = self.image.get_rect()
         self.startjump()
 
-    def update(self, platforms_list):
+    def update(self):
 
         if(self.right):
             self.rect.x += 3
@@ -171,10 +173,6 @@ class Player(Entity):
             if self.time >= 2:
                 self.time = 0
 
-        # Detect if we need to jump or not :
-        collision = self.rect.collidelist(platforms_list)
-        if collision > -1 and self.yvel < 0 and self.rect.y <= platforms_list[collision].y:
-            self.startjump()
 
 
 
