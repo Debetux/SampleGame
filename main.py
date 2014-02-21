@@ -37,7 +37,7 @@ def main():
 def runGame(screen, clock):
 
     player = Player()
-    camera = Camera(complex_camera, WINWIDTH, WINHEIGHT)
+    camera = Camera(simple_camera, WINWIDTH, WINHEIGHT*2)
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
