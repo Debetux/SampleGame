@@ -13,6 +13,8 @@ def main():
     global green, white
     global cameraX, cameraY, camera
 
+    cameraY = None
+
     green = (140, 148, 64)
     white = (197, 200, 198)
     """ End of global part """
@@ -145,10 +147,12 @@ class Player(Entity):
         self.jumpvel = 10
         self.time = 0
 
+        self.player_color = Color("#000000")
+
         self.left = self.right = self.up = self.down = False
 
         self.image = pygame.Surface((10,10))
-        self.image.fill(Color("#FF8A00"))
+        self.image.fill(self.player_color)
         self.image.convert()
 
         self.rect = self.image.get_rect()
@@ -156,6 +160,7 @@ class Player(Entity):
 
     def update(self, platforms_list):
 
+        print(cameraY, self.rect)
         if(self.right):
             self.rect.x += 3
         if(self.left):
@@ -193,7 +198,7 @@ class Player(Entity):
         if out_right > 0:
             newrect = self.rect.copy()
             newrect.x = out_right - self.rect.width
-            pygame.draw.rect(screen, Color("#FF8A00"), newrect)
+            pygame.draw.rect(screen, self.player_color, newrect)
             
             if(out_right - self.rect.width) > 0:
                 self.rect.x = out_right - self.rect.width
@@ -201,7 +206,7 @@ class Player(Entity):
         elif out_left < 0:
             newrect = self.rect.copy()
             newrect.x = WINWIDTH + out_left
-            pygame.draw.rect(screen, Color("#FF8A00"), newrect)
+            pygame.draw.rect(screen, self.player_color, newrect)
 
             if abs(out_left) > self.rect.width:
                 self.rect.x = WINWIDTH + out_left
@@ -285,9 +290,14 @@ def vertical_camera(camera, target_rect):
     if(camera.max_t < t):
         camera.max_t = t
     t = camera.max_t
-    
+    l = 0
+
     t = max(-(camera.state.height-HALF_WINHEIGHT), t) # stop scrolling at the bottom
-    print(l, t, w, h)
+    # print(l, t, w, h)
+    global cameraY
+    cameraY = t
+    #print(t, cameraY)
+
     return Rect(l, t, w, h)
 
 main()
