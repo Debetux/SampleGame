@@ -50,14 +50,18 @@ def runGame(screen, clock):
 
 
     """ Populate platforms """
-    for i in range(random.randint(60,70)):
-        p = Platform()
-        p.rect.x = random.randint(0, WINWIDTH)
-        p.rect.y = random.randint(0, WINHEIGHT)
-        print(p.rect)
+    for iy in range(0, WINHEIGHT, random.randint(40, 50)):
 
-        entities.add(p)
-        platforms_list.append(p)
+        for ix in range(0, WINWIDTH, random.randint(70, 80)):
+            if(random.randint(0,5) == 1):
+                p = Platform()
+                p.rect.x = ix + random.randint(-10,10)
+                p.rect.y = iy + random.randint(-10, 10)
+
+                entities.add(p)
+                platforms_list.append(p)
+                print(p.rect)
+        
 
         # while p.collidelist(self.platforms_list) != -1:
         #     p.x = random.randint(0, WINWIDTH) 
@@ -66,7 +70,7 @@ def runGame(screen, clock):
         # pygame.draw.rect(DISPLAYSURF, green, p)
         # self.platforms_list.append(p)
 
-
+    print(len(platforms_list))
     while True:
 
         for event in pygame.event.get():
@@ -167,7 +171,7 @@ class Player(Entity):
             self.startjump()
 
         if(pygame.sprite.spritecollideany(self, platforms_list)):
-            print('BAM')
+            self.startjump()
 
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
