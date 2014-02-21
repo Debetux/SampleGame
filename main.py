@@ -99,7 +99,7 @@ def runGame(screen, clock):
         camera.update(player)
 
         # Draw entities
-        entities.draw()
+        entities.draw(screen)
         # for e in entities:
         #     screen.blit(e.image, camera.apply(e))
         # ... and platforms
@@ -148,9 +148,9 @@ class Player(Entity):
     def update(self):
 
         if(self.right):
-            self.rect.x += 3
+            self.rect.x += 10
         if(self.left):
-            self.rect.x -= 3
+            self.rect.x -= 10
         if(self.up):
             self.rect.y -= 3
         if(self.down):
@@ -167,6 +167,29 @@ class Player(Entity):
 
         self.rect.y -= self.yvel
         
+        """ Manage the case when the rect is out of the screen """
+        out_left = self.rect.topleft[0]
+        out_right = self.rect.topright[0] - WINWIDTH
+
+        
+        screen = pygame.display.get_surface()
+
+        if out_right > 0:
+            newrect = self.rect.copy()
+            newrect.x = out_right - self.rect.width
+            pygame.draw.rect(screen, Color("#FF8A00"), newrect)
+            
+            if(out_right - self.rect.width) > 0:
+                self.rect.x = out_right - self.rect.width
+
+        elif out_left < 0:
+            newrect = self.rect.copy()
+            newrect.x = WINWIDTH + out_left
+            pygame.draw.rect(screen, Color("#FF8A00"), newrect)
+            print(out_left)
+            if abs(out_left) > self.rect.width:
+                self.rect.x = WINWIDTH + out_left
+        """ """  
         
         if self.time != 0:
             self.time += 1
