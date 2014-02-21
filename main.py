@@ -40,6 +40,7 @@ def runGame(screen, clock):
 
     entities = pygame.sprite.Group() # Group all our entities (platform, player)
     entities.add(player)
+    platforms_list = list()
 
     up = down = left = right = running = False
 
@@ -51,9 +52,13 @@ def runGame(screen, clock):
     """ Populate platforms """
     for i in range(random.randint(60,70)):
         p = Platform()
-        p.rect = (random.randint(0, WINWIDTH), random.randint(0, WINHEIGHT))
-        
+        p.rect.x = random.randint(0, WINWIDTH)
+        p.rect.y = random.randint(0, WINHEIGHT)
+        print(p.rect)
+
         entities.add(p)
+        platforms_list.append(p)
+
         # while p.collidelist(self.platforms_list) != -1:
         #     p.x = random.randint(0, WINWIDTH) 
         #     p.y = random.randint(0, WINHEIGHT)
@@ -106,7 +111,7 @@ def runGame(screen, clock):
         
 
         # Make player live
-        player.update()
+        player.update(platforms_list)
 
         # Flip the images
         pygame.display.flip()
@@ -145,12 +150,12 @@ class Player(Entity):
         self.rect = self.image.get_rect()
         self.startjump()
 
-    def update(self):
+    def update(self, platforms_list):
 
         if(self.right):
-            self.rect.x += 10
+            self.rect.x += 3
         if(self.left):
-            self.rect.x -= 10
+            self.rect.x -= 3
         if(self.up):
             self.rect.y -= 3
         if(self.down):
@@ -161,12 +166,24 @@ class Player(Entity):
             self.yvel = 0
             self.startjump()
 
+        for platform in platforms_list:
+            #import pdb; pdb.set_trace()
+            print(platform)
+            if pygame.sprite.collide_rect(self, platform):
+                self.startjump()
+
         self.yvel -= self.gravity
         if abs(self.yvel) >= self.terminalvelocity:
             self.yvel = -self.terminalvelocity
 
         self.rect.y -= self.yvel
         
+        if self.time != 0:
+            self.time += 1
+            if self.time >= 2:
+                self.time = 0
+
+
         """ Manage the case when the rect is out of the screen """
         out_left = self.rect.topleft[0]
         out_right = self.rect.topright[0] - WINWIDTH
@@ -186,15 +203,12 @@ class Player(Entity):
             newrect = self.rect.copy()
             newrect.x = WINWIDTH + out_left
             pygame.draw.rect(screen, Color("#FF8A00"), newrect)
-            print(out_left)
+
             if abs(out_left) > self.rect.width:
                 self.rect.x = WINWIDTH + out_left
-        """ """  
+        """ End """  
         
-        if self.time != 0:
-            self.time += 1
-            if self.time >= 2:
-                self.time = 0
+        
 
 
 
